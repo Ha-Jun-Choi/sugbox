@@ -52,3 +52,9 @@
     "eslint-plugin-react-hooks": "^5.2.0"
   }
 }
+{
+  "scripts": {
+    "build": "cd client && npm install && npm run build",
+    "start": "node server.js"
+  }
+}
