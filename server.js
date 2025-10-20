@@ -21,7 +21,7 @@ const app = express();
 /* ===== 업로드 디렉터리(로컬 vs Render) ===== */
 const UPLOAD_DIR = process.env.RENDER ? '/tmp/uploads' : path.join(__dirname, 'uploads');
 
-/* ===== Cloudinary (임시로 그대로 유지) ===== */
+/* ===== Cloudinary 설정 ===== */
 cloudinary.config({
   cloud_name: 'dtrzecb0l',
   api_key: '427118938288478',
@@ -51,15 +51,45 @@ app.use(
   helmet({
     crossOriginResourcePolicy: false,
     crossOriginEmbedderPolicy: false,
-    // ✅ Cloudinary 위젯 & API 허용을 위한 CSP 추가
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "https://widget.cloudinary.com", "'unsafe-inline'"],
-        connectSrc: ["'self'", "https://api.cloudinary.com"],
-        imgSrc: ["'self'", "data:", "blob:", "https://res.cloudinary.com"],
-        styleSrc: ["'self'", "'unsafe-inline'"],
-        frameSrc: ["'self'", "https://widget.cloudinary.com"],
+        scriptSrc: [
+          "'self'",
+          "https://widget.cloudinary.com",
+          "https://upload-widget.cloudinary.com",
+          "https://cdn.jsdelivr.net",
+          "https://cdnjs.cloudflare.com",
+          "'unsafe-inline'"
+        ],
+        styleSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "https://fonts.googleapis.com",
+          "https://cdn.jsdelivr.net"
+        ],
+        fontSrc: [
+          "'self'",
+          "https://fonts.gstatic.com",
+          "https://cdn.jsdelivr.net"
+        ],
+        connectSrc: [
+          "'self'",
+          "https://api.cloudinary.com",
+          "https://res.cloudinary.com"
+        ],
+        imgSrc: [
+          "'self'",
+          "data:",
+          "blob:",
+          "https://res.cloudinary.com",
+          "https://cdn.jsdelivr.net"
+        ],
+        frameSrc: [
+          "'self'",
+          "https://widget.cloudinary.com",
+          "https://upload-widget.cloudinary.com"
+        ],
         workerSrc: ["'self'", "blob:"]
       }
     }
@@ -68,24 +98,27 @@ app.use(
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(fileUpload({
-  createParentPath: true,
-  useTempFiles: true,      // ✅ temp 파일 사용
-  tempFileDir: '/tmp',     // ✅ Render 호환
-  limits: { fileSize: 5 * 1024 * 1024 } // 5MB
-}));
+app.use(
+  fileUpload({
+    createParentPath: true,
+    useTempFiles: true,
+    tempFileDir: '/tmp',
+    limits: { fileSize: 5 * 1024 * 1024 } // 5MB
+  })
+);
 
-/* 로컬 개발 시 정적 업로드 경로 서빙 (Render에서는 주로 Cloudinary URL 사용) */
+/* 로컬 개발 시 정적 업로드 경로 서빙 */
 app.use('/uploads', express.static(UPLOAD_DIR));
 
-/* ===== MongoDB Atlas 연결 (환경변수 사용) ===== */
+/* ===== MongoDB 연결 ===== */
 const MONGO_URI = process.env.MONGO_URI;
 if (!MONGO_URI) {
   console.error('❌ MONGO_URI 환경변수가 없습니다. Render → Environment에 추가하세요.');
   process.exit(1);
 }
 
-mongoose.connect(MONGO_URI)
+mongoose
+  .connect(MONGO_URI)
   .then(() => console.log('✅ MongoDB Connected'))
   .catch(err => {
     console.error('❌ MongoDB Connection Error:', err);
@@ -96,7 +129,7 @@ mongoose.connection.on('error', err => {
   console.error('MongoDB 연결 에러:', err);
 });
 
-/* ===== API 라우트 (정적 서빙보다 먼저) ===== */
+/* ===== API 라우트 ===== */
 app.use('/api/suggestions', suggestionsRouter);
 app.use('/api/notices', noticesRouter);
 app.use('/api/contests', contestsRouter);
@@ -117,7 +150,9 @@ app.use((req, res) => {
 
 app.use((err, req, res, next) => {
   console.error('서버 에러 발생:', err);
-  res.status(500).json({ message: '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.' });
+  res
+    .status(500)
+    .json({ message: '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.' });
 });
 
 /* ===== 서버 시작 ===== */
