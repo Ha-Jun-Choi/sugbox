@@ -68,6 +68,13 @@ app.use(
           "https://fonts.googleapis.com",
           "https://cdn.jsdelivr.net"
         ],
+        /** ✅ style-src-elem 명시 추가 */
+        "style-src-elem": [
+          "'self'",
+          "'unsafe-inline'",
+          "https://fonts.googleapis.com",
+          "https://cdn.jsdelivr.net"
+        ],
         fontSrc: [
           "'self'",
           "https://fonts.gstatic.com",
