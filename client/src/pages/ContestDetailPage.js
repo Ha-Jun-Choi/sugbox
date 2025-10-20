@@ -22,7 +22,7 @@ import {
 import axios from 'axios';
 
 // Set default base URL for all axios requests
-axios.defaults.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
+axios.defaults.baseURL = process.env.REACT_APP_API_URL || '';
 
 function ContestDetailPage() {
   const { id } = useParams();
