@@ -68,7 +68,7 @@ app.use(
           "https://cdnjs.cloudflare.com",
           "'unsafe-inline'"
         ],
-        script-Src-Elem: [
+        "script-src-elem": [
           "'self'",
           "https://widget.cloudinary.com",
           "https://upload-widget.cloudinary.com",
