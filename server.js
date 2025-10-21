@@ -56,10 +56,10 @@ app.use(
       useDefaults: true,
       directives: {
         // 기본
-        defaultSrc: ["'self'"],
-        objectSrc: ["'none'"],
+        "default-src": ["'self'"],
+        "object-src": ["'none'"],
 
-        // 스크립트 (위젯/업로드 위젯 모두 허용)
+        // 스크립트 (Cloudinary 위젯/업로드 위젯 허용)
         "script-src": [
           "'self'",
           "https://widget.cloudinary.com",
@@ -78,13 +78,13 @@ app.use(
         ],
 
         // 스타일
-        styleSrc: [
+        "style-src": [
           "'self'",
           "'unsafe-inline'",
           "https://fonts.googleapis.com",
           "https://cdn.jsdelivr.net"
         ],
-        styleSrcElem: [
+        "style-src-elem": [
           "'self'",
           "'unsafe-inline'",
           "https://fonts.googleapis.com",
@@ -92,21 +92,21 @@ app.use(
         ],
 
         // 폰트
-        fontSrc: [
+        "font-src": [
           "'self'",
           "https://fonts.gstatic.com",
           "https://cdn.jsdelivr.net"
         ],
 
         // XHR / fetch
-        connectSrc: [
+        "connect-src": [
           "'self'",
           "https://api.cloudinary.com",
           "https://res.cloudinary.com"
         ],
 
         // 이미지(미리보기/결과)
-        imgSrc: [
+        "img-src": [
           "'self'",
           "data:",
           "blob:",
@@ -115,14 +115,14 @@ app.use(
         ],
 
         // iframe/위젯
-        frameSrc: [
+        "frame-src": [
           "'self'",
           "https://widget.cloudinary.com",
           "https://upload-widget.cloudinary.com"
         ],
 
         // blob 워커
-        workerSrc: ["'self'", "blob:"]
+        "worker-src": ["'self'", "blob:"]
       }
     }
   })
