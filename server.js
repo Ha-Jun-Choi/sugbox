@@ -18,7 +18,7 @@ const submissionsRouter = require('./routes/submissions');
 
 const app = express();
 
-/* ===== 업로드 디렉터리(로컬 vs Render) ===== */
+/* ===== 업로드 디렉터리 (Render / 로컬 자동 구분) ===== */
 const UPLOAD_DIR = process.env.RENDER ? '/tmp/uploads' : path.join(__dirname, 'uploads');
 
 /* ===== Cloudinary 설정 ===== */
@@ -28,7 +28,7 @@ cloudinary.config({
   api_secret: 'rFeZ3fk-0ekeLdEcQeZa5SiPU60'
 });
 
-/* ===== Multer 설정 (Render는 /tmp 사용) ===== */
+/* ===== Multer 설정 ===== */
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     if (!fs.existsSync(UPLOAD_DIR)) {
@@ -54,6 +54,7 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
+        // ✅ 외부 스크립트 허용
         scriptSrc: [
           "'self'",
           "https://widget.cloudinary.com",
@@ -62,13 +63,21 @@ app.use(
           "https://cdnjs.cloudflare.com",
           "'unsafe-inline'"
         ],
+        "script-src-elem": [
+          "'self'",
+          "https://widget.cloudinary.com",
+          "https://upload-widget.cloudinary.com",
+          "https://cdn.jsdelivr.net",
+          "https://cdnjs.cloudflare.com",
+          "'unsafe-inline'"
+        ],
+        // ✅ 외부 스타일시트 / 폰트 허용
         styleSrc: [
           "'self'",
           "'unsafe-inline'",
           "https://fonts.googleapis.com",
           "https://cdn.jsdelivr.net"
         ],
-        /** ✅ style-src-elem 명시 추가 */
         "style-src-elem": [
           "'self'",
           "'unsafe-inline'",
@@ -80,6 +89,7 @@ app.use(
           "https://fonts.gstatic.com",
           "https://cdn.jsdelivr.net"
         ],
+        // ✅ 이미지·API·프레임 관련
         connectSrc: [
           "'self'",
           "https://api.cloudinary.com",
@@ -102,9 +112,12 @@ app.use(
     }
   })
 );
+
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+/* ===== 파일 업로드 설정 ===== */
 app.use(
   fileUpload({
     createParentPath: true,
@@ -114,7 +127,7 @@ app.use(
   })
 );
 
-/* 로컬 개발 시 정적 업로드 경로 서빙 */
+/* 로컬 개발 시 업로드 폴더 서빙 */
 app.use('/uploads', express.static(UPLOAD_DIR));
 
 /* ===== MongoDB 연결 ===== */
@@ -157,13 +170,11 @@ app.use((req, res) => {
 
 app.use((err, req, res, next) => {
   console.error('서버 에러 발생:', err);
-  res
-    .status(500)
-    .json({ message: '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.' });
+  res.status(500).json({ message: '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.' });
 });
 
 /* ===== 서버 시작 ===== */
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
-  console.log(`서버가 포트 ${PORT}에서 실행 중입니다.`);
+  console.log(`🚀 서버가 포트 ${PORT}에서 실행 중입니다.`);
 });
