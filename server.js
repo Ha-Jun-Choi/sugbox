@@ -22,10 +22,11 @@ const app = express();
 const UPLOAD_DIR = process.env.RENDER ? '/tmp/uploads' : path.join(__dirname, 'uploads');
 
 /* ===== Cloudinary 설정 ===== */
+// 보안상 환경변수 권장. 없으면 기존 값 사용
 cloudinary.config({
-  cloud_name: 'dtrzecb0l',
-  api_key: '427118938288478',
-  api_secret: 'rFeZ3fk-0ekeLdEcQeZa5SiPU60'
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'dtrzecb0l',
+  api_key: process.env.CLOUDINARY_API_KEY || '427118938288478',
+  api_secret: process.env.CLOUDINARY_API_SECRET || 'rFeZ3fk-0ekeLdEcQeZa5SiPU60'
 });
 
 /* ===== Multer 설정 ===== */
@@ -52,44 +53,59 @@ app.use(
     crossOriginResourcePolicy: false,
     crossOriginEmbedderPolicy: false,
     contentSecurityPolicy: {
+      useDefaults: true,
       directives: {
+        // 기본
         defaultSrc: ["'self'"],
+        objectSrc: ["'none'"],
+
+        // 스크립트 (위젯/업로드 위젯 모두 허용)
         scriptSrc: [
           "'self'",
-          "https://widget.cloudinary.com",  // ✅ 위젯 스크립트 허용
+          "https://widget.cloudinary.com",
+          "https://upload-widget.cloudinary.com",
           "https://cdn.jsdelivr.net",
           "https://cdnjs.cloudflare.com",
           "'unsafe-inline'"
         ],
-        "script-src-elem": [
+        scriptSrcElem: [
           "'self'",
           "https://widget.cloudinary.com",
+          "https://upload-widget.cloudinary.com",
           "https://cdn.jsdelivr.net",
           "https://cdnjs.cloudflare.com",
           "'unsafe-inline'"
         ],
+
+        // 스타일
         styleSrc: [
           "'self'",
           "'unsafe-inline'",
           "https://fonts.googleapis.com",
           "https://cdn.jsdelivr.net"
         ],
-        "style-src-elem": [
+        styleSrcElem: [
           "'self'",
           "'unsafe-inline'",
           "https://fonts.googleapis.com",
           "https://cdn.jsdelivr.net"
         ],
+
+        // 폰트
         fontSrc: [
           "'self'",
           "https://fonts.gstatic.com",
           "https://cdn.jsdelivr.net"
         ],
+
+        // XHR / fetch
         connectSrc: [
           "'self'",
           "https://api.cloudinary.com",
           "https://res.cloudinary.com"
         ],
+
+        // 이미지(미리보기/결과)
         imgSrc: [
           "'self'",
           "data:",
@@ -97,10 +113,15 @@ app.use(
           "https://res.cloudinary.com",
           "https://cdn.jsdelivr.net"
         ],
+
+        // iframe/위젯
         frameSrc: [
           "'self'",
-          "https://widget.cloudinary.com"
+          "https://widget.cloudinary.com",
+          "https://upload-widget.cloudinary.com"
         ],
+
+        // blob 워커
         workerSrc: ["'self'", "blob:"]
       }
     }
