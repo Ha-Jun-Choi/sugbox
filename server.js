@@ -60,7 +60,7 @@ app.use(
         objectSrc: ["'none'"],
 
         // 스크립트 (위젯/업로드 위젯 모두 허용)
-        scriptSrc: [
+        "script-src": [
           "'self'",
           "https://widget.cloudinary.com",
           "https://upload-widget.cloudinary.com",
