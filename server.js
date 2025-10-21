@@ -54,11 +54,9 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        // ✅ 외부 스크립트 허용
         scriptSrc: [
           "'self'",
-          "https://widget.cloudinary.com",
-          "https://upload-widget.cloudinary.com",
+          "https://widget.cloudinary.com",  // ✅ 위젯 스크립트 허용
           "https://cdn.jsdelivr.net",
           "https://cdnjs.cloudflare.com",
           "'unsafe-inline'"
@@ -66,12 +64,10 @@ app.use(
         "script-src-elem": [
           "'self'",
           "https://widget.cloudinary.com",
-          "https://upload-widget.cloudinary.com",
           "https://cdn.jsdelivr.net",
           "https://cdnjs.cloudflare.com",
           "'unsafe-inline'"
         ],
-        // ✅ 외부 스타일시트 / 폰트 허용
         styleSrc: [
           "'self'",
           "'unsafe-inline'",
@@ -89,7 +85,6 @@ app.use(
           "https://fonts.gstatic.com",
           "https://cdn.jsdelivr.net"
         ],
-        // ✅ 이미지·API·프레임 관련
         connectSrc: [
           "'self'",
           "https://api.cloudinary.com",
@@ -104,8 +99,7 @@ app.use(
         ],
         frameSrc: [
           "'self'",
-          "https://widget.cloudinary.com",
-          "https://upload-widget.cloudinary.com"
+          "https://widget.cloudinary.com"
         ],
         workerSrc: ["'self'", "blob:"]
       }
